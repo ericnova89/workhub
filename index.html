@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
     --bg: #f7f6f3;
     --surface: #ffffff;
@@ -22,7 +21,6 @@
     --radius-lg: 14px;
     --accent: #185FA5;
   }
-
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #111110;
@@ -35,313 +33,71 @@
       --accent: #85B7EB;
     }
   }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
-
-  .container {
-    max-width: 680px;
-    margin: 0 auto;
-  }
-
-  .top-bar {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-  }
-
-  .label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text-muted);
-    margin-bottom: 4px;
-  }
-
-  h1 {
-    font-size: 26px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .clock {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    color: var(--text-muted);
-    text-align: right;
-  }
-
-  .date {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-
-  .section-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-
-  .apps-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 10px;
-    margin-bottom: 2rem;
-  }
-
-  .app-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 1.1rem 1rem;
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    transition: border-color 0.15s, background 0.15s, transform 0.1s;
-  }
-
-  .app-card:hover {
-    border-color: var(--border-hover);
-    transform: translateY(-1px);
-  }
-
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 680px; margin: 0 auto; }
+  .top-bar { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2rem; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 4px; }
+  h1 { font-size: 26px; font-weight: 500; color: var(--text); }
+  .clock { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text-muted); text-align: right; }
+  .date { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 10px; }
+  .apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 2rem; }
+  .app-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1rem; text-decoration: none; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.15s, background 0.15s, transform 0.1s; }
+  .app-card:hover { border-color: var(--border-hover); transform: translateY(-1px); }
   .app-card:active { transform: scale(0.97); }
-
-  .app-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-  }
-
+  .app-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
   .ic-ds { background: #E6F1FB; color: #0C447C; }
   .ic-ol { background: #EEEDFE; color: #3C3489; }
   .ic-sn { background: #E1F5EE; color: #085041; }
   .ic-vk { background: #FAECE7; color: #712B13; }
-
   @media (prefers-color-scheme: dark) {
     .ic-ds { background: #0C447C; color: #B5D4F4; }
     .ic-ol { background: #3C3489; color: #CECBF6; }
     .ic-sn { background: #085041; color: #9FE1CB; }
     .ic-vk { background: #712B13; color: #F5C4B3; }
   }
-
-  .app-name {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .app-desc {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-
-  .folder {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    margin-bottom: 10px;
-    overflow: hidden;
-  }
-
-  .folder-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0.9rem 1.1rem;
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.1s;
-  }
-
+  .app-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .app-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .folder { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden; }
+  .folder-header { display: flex; align-items: center; gap: 10px; padding: 0.9rem 1.1rem; cursor: pointer; user-select: none; transition: background 0.1s; }
   .folder-header:hover { background: var(--bg); }
-
-  .folder-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text);
-    flex: 1;
-  }
-
-  .folder-count {
-    font-size: 11px;
-    color: var(--text-muted);
-    font-family: 'DM Mono', monospace;
-  }
-
-  .chevron {
-    font-size: 16px;
-    color: var(--text-muted);
-    transition: transform 0.2s;
-  }
-
+  .folder-title { font-size: 14px; font-weight: 500; color: var(--text); flex: 1; }
+  .folder-count { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+  .chevron { font-size: 16px; color: var(--text-muted); transition: transform 0.2s; }
   .chevron.open { transform: rotate(180deg); }
-
-  .folder-body {
-    display: none;
-    border-top: 0.5px solid var(--border);
-  }
-
+  .folder-body { display: none; border-top: 0.5px solid var(--border); }
   .folder-items { padding: 0.4rem 0; }
-
-  .empty-msg {
-    font-size: 12px;
-    color: var(--text-muted);
-    padding: 0.6rem 1.1rem;
-  }
-
-  .folder-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0.55rem 1.1rem;
-    text-decoration: none;
-    transition: background 0.1s;
-    cursor: pointer;
-  }
-
+  .empty-msg { font-size: 12px; color: var(--text-muted); padding: 0.6rem 1.1rem; }
+  .folder-item { display: flex; align-items: center; gap: 10px; padding: 0.55rem 1.1rem; transition: background 0.1s; }
   .folder-item:hover { background: var(--bg); }
-
-  .folder-item-icon {
-    font-size: 15px;
-    color: var(--text-muted);
-  }
-
-  .folder-item-text {
-    font-size: 13px;
-    color: var(--text);
-    flex: 1;
-  }
-
-  .remove-btn {
-    font-size: 13px;
-    color: var(--text-muted);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 2px 4px;
-    border-radius: 4px;
-    transition: color 0.1s, background 0.1s;
-    opacity: 0;
-  }
-
+  .folder-item-icon { font-size: 15px; color: var(--text-muted); flex-shrink: 0; }
+  .folder-item-text { font-size: 13px; color: var(--text); flex: 1; text-decoration: none; }
+  .folder-item-text:hover { text-decoration: underline; }
+  .remove-btn { font-size: 13px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: color 0.1s, background 0.1s; opacity: 0; flex-shrink: 0; }
   .folder-item:hover .remove-btn { opacity: 1; }
   .remove-btn:hover { color: #E24B4A; background: #FCEBEB; }
-
-  .add-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0.55rem 1.1rem;
-    font-size: 12px;
-    color: var(--text-muted);
-    cursor: pointer;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: left;
-    font-family: 'DM Sans', sans-serif;
-    border-top: 0.5px solid var(--border);
-    transition: background 0.1s, color 0.1s;
-  }
-
+  .add-btn { display: flex; align-items: center; gap: 6px; padding: 0.55rem 1.1rem; font-size: 12px; color: var(--text-muted); cursor: pointer; border: none; background: none; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif; border-top: 0.5px solid var(--border); transition: background 0.1s, color 0.1s; }
   .add-btn:hover { background: var(--bg); color: var(--text-secondary); }
-
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-  }
-
+  .sync-indicator { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); margin-bottom: 1.5rem; }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #639922; flex-shrink: 0; }
+  .sync-dot.syncing { background: #BA7517; animation: pulse 1s infinite; }
+  .sync-dot.error { background: #E24B4A; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    width: 340px;
-    max-width: 90vw;
-  }
-
-  .modal h3 {
-    font-size: 15px;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    color: var(--text);
-  }
-
-  .modal label {
-    display: block;
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-bottom: 4px;
-    margin-top: 12px;
-  }
-
-  .modal input {
-    width: 100%;
-    padding: 8px 10px;
-    font-size: 13px;
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-
+  .modal { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; width: 340px; max-width: 90vw; }
+  .modal h3 { font-size: 15px; font-weight: 500; margin-bottom: 1rem; color: var(--text); }
+  .modal label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; margin-top: 12px; }
+  .modal input { width: 100%; padding: 8px 10px; font-size: 13px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s; }
   .modal input:focus { border-color: var(--accent); }
-
-  .modal-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 1.25rem;
-    justify-content: flex-end;
-  }
-
-  .btn {
-    padding: 7px 16px;
-    font-size: 13px;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    transition: background 0.1s, transform 0.1s;
-    border: 0.5px solid var(--border);
-  }
-
+  .modal-actions { display: flex; gap: 8px; margin-top: 1.25rem; justify-content: flex-end; }
+  .btn { padding: 7px 16px; font-size: 13px; border-radius: var(--radius-md); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.1s, transform 0.1s; border: 0.5px solid var(--border); }
   .btn:active { transform: scale(0.97); }
-
   .btn-ghost { background: transparent; color: var(--text-secondary); }
   .btn-ghost:hover { background: var(--bg); }
-
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: transparent;
-  }
-
+  .btn-primary { background: var(--accent); color: #fff; border-color: transparent; }
   .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -357,35 +113,28 @@
     </div>
   </div>
 
+  <div class="sync-indicator">
+    <div class="sync-dot syncing" id="sync-dot"></div>
+    <span id="sync-label">Connecting...</span>
+  </div>
+
   <p class="section-label">Quick access</p>
   <div class="apps-grid">
     <a class="app-card" href="https://dstools.idm.gabdcn.unt.edu/" target="_blank">
       <div class="app-icon ic-ds"><i class="ti ti-tool"></i></div>
-      <div>
-        <p class="app-name">DS Tools</p>
-        <p class="app-desc">UNT desktop tools</p>
-      </div>
+      <div><p class="app-name">DS Tools</p><p class="app-desc">UNT desktop tools</p></div>
     </a>
     <a class="app-card" href="https://outlook.office.com/" target="_blank">
       <div class="app-icon ic-ol"><i class="ti ti-mail"></i></div>
-      <div>
-        <p class="app-name">Outlook</p>
-        <p class="app-desc">Email & calendar</p>
-      </div>
+      <div><p class="app-name">Outlook</p><p class="app-desc">Email & calendar</p></div>
     </a>
     <a class="app-card" href="https://unts.servicenowservices.com/now/sow/home" target="_blank">
       <div class="app-icon ic-sn"><i class="ti ti-headset"></i></div>
-      <div>
-        <p class="app-name">ServiceNow</p>
-        <p class="app-desc">IT service desk</p>
-      </div>
+      <div><p class="app-name">ServiceNow</p><p class="app-desc">IT service desk</p></div>
     </a>
     <a class="app-card" href="https://unt-dallas.command.verkada.com/cameras" target="_blank">
       <div class="app-icon ic-vk"><i class="ti ti-video"></i></div>
-      <div>
-        <p class="app-name">Verkada</p>
-        <p class="app-desc">Security cameras</p>
-      </div>
+      <div><p class="app-name">Verkada</p><p class="app-desc">Security cameras</p></div>
     </a>
   </div>
 
@@ -395,11 +144,11 @@
     <div class="folder-header" onclick="toggle('f1')">
       <i class="ti ti-bookmark" style="font-size:17px;color:var(--text-secondary);"></i>
       <span class="folder-title">Important links</span>
-      <span class="folder-count" id="f1-count">0 links</span>
+      <span class="folder-count" id="f1-count">—</span>
       <i class="ti ti-chevron-down chevron" id="f1-chev"></i>
     </div>
     <div class="folder-body" id="f1-body">
-      <div class="folder-items" id="f1-items"></div>
+      <div class="folder-items" id="f1-items"><p class="empty-msg">Loading...</p></div>
       <button class="add-btn" onclick="openModal('f1')">
         <i class="ti ti-plus" style="font-size:14px;"></i> Add link
       </button>
@@ -410,11 +159,11 @@
     <div class="folder-header" onclick="toggle('f2')">
       <i class="ti ti-files" style="font-size:17px;color:var(--text-secondary);"></i>
       <span class="folder-title">Docs & PDFs</span>
-      <span class="folder-count" id="f2-count">0 files</span>
+      <span class="folder-count" id="f2-count">—</span>
       <i class="ti ti-chevron-down chevron" id="f2-chev"></i>
     </div>
     <div class="folder-body" id="f2-body">
-      <div class="folder-items" id="f2-items"></div>
+      <div class="folder-items" id="f2-items"><p class="empty-msg">Loading...</p></div>
       <button class="add-btn" onclick="openModal('f2')">
         <i class="ti ti-plus" style="font-size:14px;"></i> Add doc / PDF link
       </button>
@@ -431,21 +180,35 @@
     <input type="url" id="modal-url" placeholder="https://..." />
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveItem()">Save</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveItem()">Save</button>
     </div>
   </div>
 </div>
 
-<script>
-  let currentFolder = null;
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-  const state = {
-    f1: JSON.parse(localStorage.getItem('wh_f1') || '[]'),
-    f2: JSON.parse(localStorage.getItem('wh_f2') || '[]')
+  const firebaseConfig = {
+    apiKey: "AIzaSyA4xfu0EjlxwV4pWJLpAO0630Nc-ywIm1A",
+    authDomain: "workhub-36773.firebaseapp.com",
+    projectId: "workhub-36773",
+    storageBucket: "workhub-36773.firebasestorage.app",
+    messagingSenderId: "124585715249",
+    appId: "1:124585715249:web:3813d66de9629e629e5710"
   };
 
-  function save(fid) {
-    try { localStorage.setItem('wh_' + fid, JSON.stringify(state[fid])); } catch(e) {}
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const state = { f1: [], f2: [] };
+  let currentFolder = null;
+
+  function setSyncStatus(status) {
+    const dot = document.getElementById('sync-dot');
+    const label = document.getElementById('sync-label');
+    dot.className = 'sync-dot' + (status === 'syncing' ? ' syncing' : status === 'error' ? ' error' : '');
+    label.textContent = status === 'syncing' ? 'Syncing...' : status === 'error' ? 'Connection error' : 'Synced across all devices';
   }
 
   function toggle(fid) {
@@ -455,6 +218,7 @@
     body.style.display = open ? 'block' : 'none';
     chev.classList.toggle('open', open);
   }
+  window.toggle = toggle;
 
   function renderItems(fid) {
     const el = document.getElementById(fid + '-items');
@@ -469,64 +233,89 @@
     el.innerHTML = items.map((item, i) => `
       <div class="folder-item">
         <i class="ti ${fid === 'f2' ? 'ti-file' : 'ti-link'} folder-item-icon"></i>
-        <a href="${item.url}" target="_blank" class="folder-item-text" style="text-decoration:none;color:var(--text);">${item.name}</a>
+        <a href="${item.url}" target="_blank" class="folder-item-text">${item.name}</a>
         <button class="remove-btn" onclick="removeItem('${fid}',${i})" title="Remove"><i class="ti ti-x"></i></button>
       </div>`).join('');
   }
 
-  function removeItem(fid, i) {
-    state[fid].splice(i, 1);
-    save(fid);
-    renderItems(fid);
+  async function saveToFirebase() {
+    setSyncStatus('syncing');
+    try {
+      await setDoc(doc(db, 'hub', 'data'), { f1: state.f1, f2: state.f2 });
+      setSyncStatus('synced');
+    } catch(e) {
+      setSyncStatus('error');
+    }
   }
 
-  function openModal(fid) {
+  window.removeItem = async function(fid, i) {
+    state[fid].splice(i, 1);
+    renderItems(fid);
+    await saveToFirebase();
+  };
+
+  window.openModal = function(fid) {
     currentFolder = fid;
     document.getElementById('modal-title').textContent = fid === 'f1' ? 'Add link' : 'Add doc / PDF';
     document.getElementById('modal-name').value = '';
     document.getElementById('modal-url').value = '';
     document.getElementById('modal').classList.add('open');
     document.getElementById('modal-name').focus();
-  }
+  };
 
-  function closeModal() {
+  window.closeModal = function() {
     document.getElementById('modal').classList.remove('open');
     currentFolder = null;
-  }
+  };
 
-  function closeModalOutside(e) {
-    if (e.target === document.getElementById('modal')) closeModal();
-  }
+  window.closeModalOutside = function(e) {
+    if (e.target === document.getElementById('modal')) window.closeModal();
+  };
 
-  function saveItem() {
+  window.saveItem = async function() {
     const name = document.getElementById('modal-name').value.trim();
     const url = document.getElementById('modal-url').value.trim();
     if (!name || !url) return;
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
     state[currentFolder].push({ name, url });
-    save(currentFolder);
     renderItems(currentFolder);
-    const body = document.getElementById(currentFolder + '-body');
-    if (body.style.display !== 'block') toggle(currentFolder);
-    closeModal();
-  }
+    const fid = currentFolder;
+    window.closeModal();
+    await saveToFirebase();
+    const body = document.getElementById(fid + '-body');
+    if (body.style.display !== 'block') toggle(fid);
+    btn.disabled = false;
+    btn.textContent = 'Save';
+  };
 
   document.getElementById('modal-url').addEventListener('keydown', e => {
-    if (e.key === 'Enter') saveItem();
+    if (e.key === 'Enter') window.saveItem();
   });
+
+  onSnapshot(doc(db, 'hub', 'data'), (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      state.f1 = data.f1 || [];
+      state.f2 = data.f2 || [];
+    } else {
+      state.f1 = [];
+      state.f2 = [];
+    }
+    renderItems('f1');
+    renderItems('f2');
+    setSyncStatus('synced');
+  }, () => setSyncStatus('error'));
 
   function updateClock() {
     const now = new Date();
     const h = now.getHours();
-    document.getElementById('greeting').textContent =
-      h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-    document.getElementById('clock-time').textContent =
-      now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('clock-date').textContent =
-      now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+    document.getElementById('greeting').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('clock-time').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('clock-date').textContent = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
   }
 
-  renderItems('f1');
-  renderItems('f2');
   updateClock();
   setInterval(updateClock, 30000);
 </script>

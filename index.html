@@ -20,6 +20,10 @@
     --radius-md: 8px;
     --radius-lg: 14px;
     --accent: #185FA5;
+    --note-bg: #FFFBF0;
+    --note-border: rgba(180,140,0,0.18);
+    --note-tag-bg: #F3EDDA;
+    --note-tag-text: #7A6020;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -31,6 +35,10 @@
       --text-secondary: #b4b2a9;
       --text-muted: #666460;
       --accent: #85B7EB;
+      --note-bg: #1e1c10;
+      --note-border: rgba(200,160,40,0.15);
+      --note-tag-bg: #2e2910;
+      --note-tag-text: #C8A83A;
     }
   }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
@@ -83,13 +91,38 @@
   .sync-dot.syncing { background: #BA7517; animation: pulse 1s infinite; }
   .sync-dot.error { background: #E24B4A; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ── Notes section ── */
+  .notes-panel { background: var(--note-bg); border: 0.5px solid var(--note-border); border-radius: var(--radius-lg); margin-bottom: 2rem; overflow: hidden; }
+  .notes-header { display: flex; align-items: center; gap: 10px; padding: 0.9rem 1.1rem; cursor: pointer; user-select: none; transition: background 0.1s; }
+  .notes-header:hover { background: rgba(0,0,0,0.03); }
+  .notes-icon { font-size: 17px; color: #9A7A20; }
+  @media (prefers-color-scheme: dark) { .notes-icon { color: #C8A83A; } }
+  .notes-body { display: none; border-top: 0.5px solid var(--note-border); }
+  .notes-list { padding: 0.5rem 0; }
+  .note-item { display: flex; align-items: flex-start; gap: 10px; padding: 0.6rem 1.1rem; transition: background 0.1s; position: relative; }
+  .note-item:hover { background: rgba(0,0,0,0.03); }
+  .note-item-inner { flex: 1; min-width: 0; }
+  .note-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--note-tag-text); margin-bottom: 2px; }
+  .note-value { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text); word-break: break-all; display: flex; align-items: center; gap: 6px; }
+  .copy-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 2px 4px; border-radius: 4px; font-size: 13px; transition: color 0.1s, background 0.1s; flex-shrink: 0; opacity: 0; }
+  .note-item:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { color: var(--accent); background: rgba(24,95,165,0.08); }
+  .copy-btn.copied { color: #639922; opacity: 1; }
+  .note-remove-btn { font-size: 13px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: color 0.1s, background 0.1s; opacity: 0; flex-shrink: 0; margin-top: 1px; }
+  .note-item:hover .note-remove-btn { opacity: 1; }
+  .note-remove-btn:hover { color: #E24B4A; background: #FCEBEB; }
+
+  /* ── Modals ── */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
   .modal { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; width: 340px; max-width: 90vw; }
   .modal h3 { font-size: 15px; font-weight: 500; margin-bottom: 1rem; color: var(--text); }
   .modal label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; margin-top: 12px; }
-  .modal input { width: 100%; padding: 8px 10px; font-size: 13px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s; }
-  .modal input:focus { border-color: var(--accent); }
+  .modal input, .modal textarea { width: 100%; padding: 8px 10px; font-size: 13px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s; }
+  .modal textarea { font-family: 'DM Mono', monospace; resize: vertical; min-height: 64px; }
+  .modal input:focus, .modal textarea:focus { border-color: var(--accent); }
+  .modal-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
   .modal-actions { display: flex; gap: 8px; margin-top: 1.25rem; justify-content: flex-end; }
   .btn { padding: 7px 16px; font-size: 13px; border-radius: var(--radius-md); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.1s, transform 0.1s; border: 0.5px solid var(--border); }
   .btn:active { transform: scale(0.97); }
@@ -138,6 +171,23 @@
     </a>
   </div>
 
+  <!-- ── Notes ── -->
+  <p class="section-label">Reference notes</p>
+  <div class="notes-panel" id="notes-panel">
+    <div class="notes-header" onclick="toggleNotes()">
+      <i class="ti ti-notebook notes-icon"></i>
+      <span class="folder-title">Quick reference</span>
+      <span class="folder-count" id="notes-count">—</span>
+      <i class="ti ti-chevron-down chevron" id="notes-chev"></i>
+    </div>
+    <div class="notes-body" id="notes-body">
+      <div class="notes-list" id="notes-list"><p class="empty-msg">Loading...</p></div>
+      <button class="add-btn" onclick="openNoteModal()">
+        <i class="ti ti-plus" style="font-size:14px;"></i> Add note
+      </button>
+    </div>
+  </div>
+
   <p class="section-label">Folders</p>
 
   <div class="folder" id="f1">
@@ -171,6 +221,7 @@
   </div>
 </div>
 
+<!-- Link modal -->
 <div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
   <div class="modal">
     <h3 id="modal-title">Add link</h3>
@@ -185,9 +236,25 @@
   </div>
 </div>
 
+<!-- Note modal -->
+<div class="modal-overlay" id="note-modal" onclick="closeNoteModalOutside(event)">
+  <div class="modal">
+    <h3>Add reference note</h3>
+    <label>Label <span style="font-weight:400;color:var(--text-muted)">(what is this?)</span></label>
+    <input type="text" id="note-label-input" placeholder="e.g. VPN IP, Admin username, VLAN abbreviation" />
+    <label>Value</label>
+    <textarea id="note-value-input" placeholder="e.g. 192.168.1.1"></textarea>
+    <p class="modal-hint">Tip: you can copy any value instantly with one click.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeNoteModal()">Cancel</button>
+      <button class="btn btn-primary" id="note-save-btn" onclick="saveNote()">Save</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyA4xfu0EjlxwV4pWJLpAO0630Nc-ywIm1A",
@@ -201,7 +268,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  const state = { f1: [], f2: [] };
+  const state = { f1: [], f2: [], notes: [] };
   let currentFolder = null;
 
   function setSyncStatus(status) {
@@ -219,6 +286,15 @@
     chev.classList.toggle('open', open);
   }
   window.toggle = toggle;
+
+  function toggleNotes() {
+    const body = document.getElementById('notes-body');
+    const chev = document.getElementById('notes-chev');
+    const open = body.style.display !== 'block';
+    body.style.display = open ? 'block' : 'none';
+    chev.classList.toggle('open', open);
+  }
+  window.toggleNotes = toggleNotes;
 
   function renderItems(fid) {
     const el = document.getElementById(fid + '-items');
@@ -238,10 +314,50 @@
       </div>`).join('');
   }
 
+  function renderNotes() {
+    const el = document.getElementById('notes-list');
+    const countEl = document.getElementById('notes-count');
+    const notes = state.notes;
+    countEl.textContent = notes.length + ' ' + (notes.length === 1 ? 'note' : 'notes');
+    if (!notes.length) {
+      el.innerHTML = '<p class="empty-msg">Nothing yet — add IPs, usernames, abbreviations, anything you need handy.</p>';
+      return;
+    }
+    el.innerHTML = notes.map((n, i) => `
+      <div class="note-item">
+        <div class="note-item-inner">
+          <div class="note-label">${escHtml(n.label)}</div>
+          <div class="note-value">
+            <span>${escHtml(n.value)}</span>
+            <button class="copy-btn" onclick="copyNote(this, '${escAttr(n.value)}')" title="Copy to clipboard"><i class="ti ti-copy"></i></button>
+          </div>
+        </div>
+        <button class="note-remove-btn" onclick="removeNote(${i})" title="Remove"><i class="ti ti-x"></i></button>
+      </div>`).join('');
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function escAttr(s) {
+    return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  }
+
+  window.copyNote = function(btn, value) {
+    navigator.clipboard.writeText(value).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = '<i class="ti ti-check"></i>';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<i class="ti ti-copy"></i>';
+      }, 1500);
+    });
+  };
+
   async function saveToFirebase() {
     setSyncStatus('syncing');
     try {
-      await setDoc(doc(db, 'hub', 'data'), { f1: state.f1, f2: state.f2 });
+      await setDoc(doc(db, 'hub', 'data'), { f1: state.f1, f2: state.f2, notes: state.notes });
       setSyncStatus('synced');
     } catch(e) {
       setSyncStatus('error');
@@ -251,6 +367,12 @@
   window.removeItem = async function(fid, i) {
     state[fid].splice(i, 1);
     renderItems(fid);
+    await saveToFirebase();
+  };
+
+  window.removeNote = async function(i) {
+    state.notes.splice(i, 1);
+    renderNotes();
     await saveToFirebase();
   };
 
@@ -277,8 +399,7 @@
     const url = document.getElementById('modal-url').value.trim();
     if (!name || !url) return;
     const btn = document.getElementById('save-btn');
-    btn.disabled = true;
-    btn.textContent = 'Saving...';
+    btn.disabled = true; btn.textContent = 'Saving...';
     state[currentFolder].push({ name, url });
     renderItems(currentFolder);
     const fid = currentFolder;
@@ -286,12 +407,44 @@
     await saveToFirebase();
     const body = document.getElementById(fid + '-body');
     if (body.style.display !== 'block') toggle(fid);
-    btn.disabled = false;
-    btn.textContent = 'Save';
+    btn.disabled = false; btn.textContent = 'Save';
+  };
+
+  window.openNoteModal = function() {
+    document.getElementById('note-label-input').value = '';
+    document.getElementById('note-value-input').value = '';
+    document.getElementById('note-modal').classList.add('open');
+    document.getElementById('note-label-input').focus();
+  };
+
+  window.closeNoteModal = function() {
+    document.getElementById('note-modal').classList.remove('open');
+  };
+
+  window.closeNoteModalOutside = function(e) {
+    if (e.target === document.getElementById('note-modal')) window.closeNoteModal();
+  };
+
+  window.saveNote = async function() {
+    const label = document.getElementById('note-label-input').value.trim();
+    const value = document.getElementById('note-value-input').value.trim();
+    if (!label || !value) return;
+    const btn = document.getElementById('note-save-btn');
+    btn.disabled = true; btn.textContent = 'Saving...';
+    state.notes.push({ label, value });
+    renderNotes();
+    window.closeNoteModal();
+    await saveToFirebase();
+    const body = document.getElementById('notes-body');
+    if (body.style.display !== 'block') toggleNotes();
+    btn.disabled = false; btn.textContent = 'Save';
   };
 
   document.getElementById('modal-url').addEventListener('keydown', e => {
     if (e.key === 'Enter') window.saveItem();
+  });
+  document.getElementById('note-value-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); window.saveNote(); }
   });
 
   onSnapshot(doc(db, 'hub', 'data'), (snap) => {
@@ -299,12 +452,13 @@
       const data = snap.data();
       state.f1 = data.f1 || [];
       state.f2 = data.f2 || [];
+      state.notes = data.notes || [];
     } else {
-      state.f1 = [];
-      state.f2 = [];
+      state.f1 = []; state.f2 = []; state.notes = [];
     }
     renderItems('f1');
     renderItems('f2');
+    renderNotes();
     setSyncStatus('synced');
   }, () => setSyncStatus('error'));
 

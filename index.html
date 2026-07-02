@@ -84,6 +84,9 @@
   .remove-btn { font-size: 13px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: color 0.1s, background 0.1s; opacity: 0; flex-shrink: 0; }
   .folder-item:hover .remove-btn { opacity: 1; }
   .remove-btn:hover { color: #E24B4A; background: #FCEBEB; }
+  .edit-btn { font-size: 13px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: color 0.1s, background 0.1s; opacity: 0; flex-shrink: 0; }
+  .folder-item:hover .edit-btn, .note-item:hover .edit-btn { opacity: 1; }
+  .edit-btn:hover { color: var(--accent); background: rgba(24,95,165,0.08); }
   .add-btn { display: flex; align-items: center; gap: 6px; padding: 0.55rem 1.1rem; font-size: 12px; color: var(--text-muted); cursor: pointer; border: none; background: none; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif; border-top: 0.5px solid var(--border); transition: background 0.1s, color 0.1s; }
   .add-btn:hover { background: var(--bg); color: var(--text-secondary); }
   .sync-indicator { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); margin-bottom: 1.5rem; }
@@ -122,6 +125,7 @@
   .modal input, .modal textarea { width: 100%; padding: 8px 10px; font-size: 13px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s; }
   .modal textarea { font-family: 'DM Mono', monospace; resize: vertical; min-height: 64px; }
   .modal input:focus, .modal textarea:focus { border-color: var(--accent); }
+  .modal input[type="file"] { padding: 6px 0; border: none; font-size: 12px; }
   .modal-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
   .modal-actions { display: flex; gap: 8px; margin-top: 1.25rem; justify-content: flex-end; }
   .btn { padding: 7px 16px; font-size: 13px; border-radius: var(--radius-md); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.1s, transform 0.1s; border: 0.5px solid var(--border); }
@@ -214,8 +218,8 @@
     </div>
     <div class="folder-body" id="f2-body">
       <div class="folder-items" id="f2-items"><p class="empty-msg">Loading...</p></div>
-      <button class="add-btn" onclick="openModal('f2')">
-        <i class="ti ti-plus" style="font-size:14px;"></i> Add doc / PDF link
+      <button class="add-btn" onclick="openFileModal()">
+        <i class="ti ti-plus" style="font-size:14px;"></i> Add file
       </button>
     </div>
   </div>
@@ -236,10 +240,28 @@
   </div>
 </div>
 
+<!-- File modal -->
+<div class="modal-overlay" id="file-modal" onclick="closeFileModalOutside(event)">
+  <div class="modal">
+    <h3 id="file-modal-title">Add file</h3>
+    <label>Name</label>
+    <input type="text" id="file-name-input" placeholder="e.g. Reimage Checklist" />
+    <div id="file-input-row">
+      <label>File</label>
+      <input type="file" id="file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,application/pdf" />
+      <p class="modal-hint">Uploaded once — then available to open or download from any device.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeFileModal()">Cancel</button>
+      <button class="btn btn-primary" id="file-save-btn" onclick="saveFile()">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- Note modal -->
 <div class="modal-overlay" id="note-modal" onclick="closeNoteModalOutside(event)">
   <div class="modal">
-    <h3>Add reference note</h3>
+    <h3 id="note-modal-title">Add reference note</h3>
     <label>Label <span style="font-weight:400;color:var(--text-muted)">(what is this?)</span></label>
     <input type="text" id="note-label-input" placeholder="e.g. VPN IP, Admin username, VLAN abbreviation" />
     <label>Value</label>
@@ -255,6 +277,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
   import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyA4xfu0EjlxwV4pWJLpAO0630Nc-ywIm1A",
@@ -267,9 +290,13 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const storage = getStorage(app);
 
   const state = { f1: [], f2: [], notes: [] };
   let currentFolder = null;
+  let editingIndex = null;
+  let editingFileIndex = null;
+  let editingNoteIndex = null;
 
   function setSyncStatus(status) {
     const dot = document.getElementById('sync-dot');
@@ -309,7 +336,8 @@
     el.innerHTML = items.map((item, i) => `
       <div class="folder-item">
         <i class="ti ${fid === 'f2' ? 'ti-file' : 'ti-link'} folder-item-icon"></i>
-        <a href="${item.url}" target="_blank" class="folder-item-text">${item.name}</a>
+        <a href="${item.url}" target="_blank" class="folder-item-text">${escHtml(item.name)}</a>
+        <button class="edit-btn" onclick="${fid === 'f2' ? `openFileModal(${i})` : `openModal('${fid}',${i})`}" title="Edit name"><i class="ti ti-pencil"></i></button>
         <button class="remove-btn" onclick="removeItem('${fid}',${i})" title="Remove"><i class="ti ti-x"></i></button>
       </div>`).join('');
   }
@@ -332,6 +360,7 @@
             <button class="copy-btn" onclick="copyNote(this, '${escAttr(n.value)}')" title="Copy to clipboard"><i class="ti ti-copy"></i></button>
           </div>
         </div>
+        <button class="edit-btn" onclick="openNoteModal(${i})" title="Edit"><i class="ti ti-pencil"></i></button>
         <button class="note-remove-btn" onclick="removeNote(${i})" title="Remove"><i class="ti ti-x"></i></button>
       </div>`).join('');
   }
@@ -376,11 +405,13 @@
     await saveToFirebase();
   };
 
-  window.openModal = function(fid) {
+  window.openModal = function(fid, i) {
     currentFolder = fid;
-    document.getElementById('modal-title').textContent = fid === 'f1' ? 'Add link' : 'Add doc / PDF';
-    document.getElementById('modal-name').value = '';
-    document.getElementById('modal-url').value = '';
+    editingIndex = (typeof i === 'number') ? i : null;
+    const item = editingIndex !== null ? state[fid][editingIndex] : null;
+    document.getElementById('modal-title').textContent = editingIndex !== null ? 'Edit link' : 'Add link';
+    document.getElementById('modal-name').value = item ? item.name : '';
+    document.getElementById('modal-url').value = item ? item.url : '';
     document.getElementById('modal').classList.add('open');
     document.getElementById('modal-name').focus();
   };
@@ -388,6 +419,7 @@
   window.closeModal = function() {
     document.getElementById('modal').classList.remove('open');
     currentFolder = null;
+    editingIndex = null;
   };
 
   window.closeModalOutside = function(e) {
@@ -400,9 +432,13 @@
     if (!name || !url) return;
     const btn = document.getElementById('save-btn');
     btn.disabled = true; btn.textContent = 'Saving...';
-    state[currentFolder].push({ name, url });
-    renderItems(currentFolder);
     const fid = currentFolder;
+    if (editingIndex !== null) {
+      state[fid][editingIndex] = { name, url };
+    } else {
+      state[fid].push({ name, url });
+    }
+    renderItems(fid);
     window.closeModal();
     await saveToFirebase();
     const body = document.getElementById(fid + '-body');
@@ -410,15 +446,73 @@
     btn.disabled = false; btn.textContent = 'Save';
   };
 
-  window.openNoteModal = function() {
-    document.getElementById('note-label-input').value = '';
-    document.getElementById('note-value-input').value = '';
+  window.openFileModal = function(i) {
+    editingFileIndex = (typeof i === 'number') ? i : null;
+    const item = editingFileIndex !== null ? state.f2[editingFileIndex] : null;
+    document.getElementById('file-modal-title').textContent = editingFileIndex !== null ? 'Rename file' : 'Add file';
+    document.getElementById('file-name-input').value = item ? item.name : '';
+    document.getElementById('file-input-row').style.display = editingFileIndex !== null ? 'none' : 'block';
+    document.getElementById('file-input').value = '';
+    document.getElementById('file-modal').classList.add('open');
+    document.getElementById('file-name-input').focus();
+  };
+
+  window.closeFileModal = function() {
+    document.getElementById('file-modal').classList.remove('open');
+    editingFileIndex = null;
+  };
+
+  window.closeFileModalOutside = function(e) {
+    if (e.target === document.getElementById('file-modal')) window.closeFileModal();
+  };
+
+  window.saveFile = async function() {
+    const name = document.getElementById('file-name-input').value.trim();
+    const btn = document.getElementById('file-save-btn');
+    if (!name) return;
+
+    if (editingFileIndex !== null) {
+      state.f2[editingFileIndex].name = name;
+      renderItems('f2');
+      window.closeFileModal();
+      await saveToFirebase();
+      return;
+    }
+
+    const fileInput = document.getElementById('file-input');
+    const file = fileInput.files[0];
+    if (!file) return;
+    btn.disabled = true; btn.textContent = 'Uploading...';
+    try {
+      const path = 'hub-files/' + Date.now() + '-' + file.name;
+      const fRef = storageRef(storage, path);
+      await uploadBytes(fRef, file);
+      const url = await getDownloadURL(fRef);
+      state.f2.push({ name, url });
+      renderItems('f2');
+      window.closeFileModal();
+      await saveToFirebase();
+      const body = document.getElementById('f2-body');
+      if (body.style.display !== 'block') toggle('f2');
+    } catch (e) {
+      alert('Upload failed. This usually means Firebase Storage rules need to be updated too (same fix as Firestore).');
+    }
+    btn.disabled = false; btn.textContent = 'Save';
+  };
+
+  window.openNoteModal = function(i) {
+    editingNoteIndex = (typeof i === 'number') ? i : null;
+    const note = editingNoteIndex !== null ? state.notes[editingNoteIndex] : null;
+    document.getElementById('note-modal-title').textContent = editingNoteIndex !== null ? 'Edit reference note' : 'Add reference note';
+    document.getElementById('note-label-input').value = note ? note.label : '';
+    document.getElementById('note-value-input').value = note ? note.value : '';
     document.getElementById('note-modal').classList.add('open');
     document.getElementById('note-label-input').focus();
   };
 
   window.closeNoteModal = function() {
     document.getElementById('note-modal').classList.remove('open');
+    editingNoteIndex = null;
   };
 
   window.closeNoteModalOutside = function(e) {
@@ -431,7 +525,11 @@
     if (!label || !value) return;
     const btn = document.getElementById('note-save-btn');
     btn.disabled = true; btn.textContent = 'Saving...';
-    state.notes.push({ label, value });
+    if (editingNoteIndex !== null) {
+      state.notes[editingNoteIndex] = { label, value };
+    } else {
+      state.notes.push({ label, value });
+    }
     renderNotes();
     window.closeNoteModal();
     await saveToFirebase();

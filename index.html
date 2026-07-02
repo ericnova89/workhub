@@ -218,8 +218,8 @@
     </div>
     <div class="folder-body" id="f2-body">
       <div class="folder-items" id="f2-items"><p class="empty-msg">Loading...</p></div>
-      <button class="add-btn" onclick="openFileModal()">
-        <i class="ti ti-plus" style="font-size:14px;"></i> Add file
+      <button class="add-btn" onclick="openModal('f2')">
+        <i class="ti ti-plus" style="font-size:14px;"></i> Add doc / PDF link
       </button>
     </div>
   </div>
@@ -236,24 +236,6 @@
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
       <button class="btn btn-primary" id="save-btn" onclick="saveItem()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- File modal -->
-<div class="modal-overlay" id="file-modal" onclick="closeFileModalOutside(event)">
-  <div class="modal">
-    <h3 id="file-modal-title">Add file</h3>
-    <label>Name</label>
-    <input type="text" id="file-name-input" placeholder="e.g. Reimage Checklist" />
-    <div id="file-input-row">
-      <label>File</label>
-      <input type="file" id="file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,application/pdf" />
-      <p class="modal-hint">Uploaded once — then available to open or download from any device.</p>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeFileModal()">Cancel</button>
-      <button class="btn btn-primary" id="file-save-btn" onclick="saveFile()">Save</button>
     </div>
   </div>
 </div>
@@ -277,7 +259,6 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
   import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
-  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyA4xfu0EjlxwV4pWJLpAO0630Nc-ywIm1A",
@@ -290,12 +271,10 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const storage = getStorage(app);
 
   const state = { f1: [], f2: [], notes: [] };
   let currentFolder = null;
   let editingIndex = null;
-  let editingFileIndex = null;
   let editingNoteIndex = null;
 
   function setSyncStatus(status) {
@@ -337,7 +316,7 @@
       <div class="folder-item">
         <i class="ti ${fid === 'f2' ? 'ti-file' : 'ti-link'} folder-item-icon"></i>
         <a href="${item.url}" target="_blank" class="folder-item-text">${escHtml(item.name)}</a>
-        <button class="edit-btn" onclick="${fid === 'f2' ? `openFileModal(${i})` : `openModal('${fid}',${i})`}" title="Edit name"><i class="ti ti-pencil"></i></button>
+        <button class="edit-btn" onclick="openModal('${fid}',${i})" title="Edit"><i class="ti ti-pencil"></i></button>
         <button class="remove-btn" onclick="removeItem('${fid}',${i})" title="Remove"><i class="ti ti-x"></i></button>
       </div>`).join('');
   }
@@ -443,60 +422,6 @@
     await saveToFirebase();
     const body = document.getElementById(fid + '-body');
     if (body.style.display !== 'block') toggle(fid);
-    btn.disabled = false; btn.textContent = 'Save';
-  };
-
-  window.openFileModal = function(i) {
-    editingFileIndex = (typeof i === 'number') ? i : null;
-    const item = editingFileIndex !== null ? state.f2[editingFileIndex] : null;
-    document.getElementById('file-modal-title').textContent = editingFileIndex !== null ? 'Rename file' : 'Add file';
-    document.getElementById('file-name-input').value = item ? item.name : '';
-    document.getElementById('file-input-row').style.display = editingFileIndex !== null ? 'none' : 'block';
-    document.getElementById('file-input').value = '';
-    document.getElementById('file-modal').classList.add('open');
-    document.getElementById('file-name-input').focus();
-  };
-
-  window.closeFileModal = function() {
-    document.getElementById('file-modal').classList.remove('open');
-    editingFileIndex = null;
-  };
-
-  window.closeFileModalOutside = function(e) {
-    if (e.target === document.getElementById('file-modal')) window.closeFileModal();
-  };
-
-  window.saveFile = async function() {
-    const name = document.getElementById('file-name-input').value.trim();
-    const btn = document.getElementById('file-save-btn');
-    if (!name) return;
-
-    if (editingFileIndex !== null) {
-      state.f2[editingFileIndex].name = name;
-      renderItems('f2');
-      window.closeFileModal();
-      await saveToFirebase();
-      return;
-    }
-
-    const fileInput = document.getElementById('file-input');
-    const file = fileInput.files[0];
-    if (!file) return;
-    btn.disabled = true; btn.textContent = 'Uploading...';
-    try {
-      const path = 'hub-files/' + Date.now() + '-' + file.name;
-      const fRef = storageRef(storage, path);
-      await uploadBytes(fRef, file);
-      const url = await getDownloadURL(fRef);
-      state.f2.push({ name, url });
-      renderItems('f2');
-      window.closeFileModal();
-      await saveToFirebase();
-      const body = document.getElementById('f2-body');
-      if (body.style.display !== 'block') toggle('f2');
-    } catch (e) {
-      alert('Upload failed. This usually means Firebase Storage rules need to be updated too (same fix as Firestore).');
-    }
     btn.disabled = false; btn.textContent = 'Save';
   };
 
